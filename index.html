@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FireMarket India - Official Store</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { background-color: #0a0a0a; color: #e5e5e5; font-family: 'Montserrat', sans-serif; }
+        .heading-font { font-family: 'Teko', sans-serif; text-transform: uppercase; }
+        html { scroll-behavior: smooth; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #151515; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        
+        /* Ad Banner Animation */
+        .ad-shine { position: relative; overflow: hidden; }
+        .ad-shine::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent); transform: skewX(-25deg); animation: shine 3s infinite; }
+        @keyframes shine { 100% { left: 200%; } }
+    </style>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // YOUR CONFIGURATION
+        const firebaseConfig = {
+          apiKey: "AIzaSyB2BlGf01KRzTG1xAYgawIQQyDGFu8apIw",
+          authDomain: "ff-store-bdb6b.firebaseapp.com",
+          projectId: "ff-store-bdb6b",
+          storageBucket: "ff-store-bdb6b.firebasestorage.app",
+          messagingSenderId: "39168088328",
+          appId: "1:39168088328:web:df32b847be6b97390ab4bd",
+          measurementId: "G-TFGNRFSQJV"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        window.loginWithGoogle = function() {
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    updateUserUI(result.user);
+                    closeLoginModal();
+                }).catch((error) => {
+                    console.error(error);
+                    alert("Login Failed: " + error.message);
+                });
+        }
+
+        window.logoutFirebase = function() {
+            signOut(auth).then(() => { updateUserUI(null); });
+        }
+
+        onAuthStateChanged(auth, (user) => { updateUserUI(user); });
+
+        function updateUserUI(user) {
+            const loginBtn = document.getElementById('loginBtnContainer');
+            const profile = document.getElementById('userProfile');
+            if (user) {
+                loginBtn.classList.add('hidden');
+                profile.classList.remove('hidden');
+                profile.classList.add('flex');
+                document.getElementById('userName').innerText = user.displayName;
+                document.getElementById('userAvatar').src = user.photoURL;
+            } else {
+                loginBtn.classList.remove('hidden');
+                profile.classList.add('hidden');
+                profile.classList.remove('flex');
+            }
+        }
+    </script>
+</head>
+<body class="antialiased flex flex-col min-h-screen">
+
+    <nav class="bg-gamer-dark border-b border-gray-800 sticky top-0 z-40 shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-fire text-neon-orange text-2xl animate-pulse"></i>
+                <div class="text-3xl font-bold heading-font tracking-widest text-white">
+                    FIRE<span class="text-neon-orange">MARKET</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-6">
+                <button onclick="openSupport()" class="text-gray-400 hover:text-white transition tooltip" title="Contact Support"><i class="fas fa-headset text-xl"></i></button>
+                <div id="loginBtnContainer">
+                    <button onclick="openLoginModal()" class="bg-neon-orange hover:bg-orange-600 text-black font-bold py-1 px-5 rounded heading-font text-xl transition">LOGIN</button>
+                </div>
+                <div id="userProfile" class="hidden flex items-center gap-3 cursor-pointer">
+                    <div class="text-right hidden md:block">
+                        <div id="userName" class="text-sm font-bold text-white">Player</div>
+                        <div class="text-[10px] text-green-500">Online</div>
+                    </div>
+                    <img id="userAvatar" src="" class="w-10 h-10 rounded-full border-2 border-neon-orange">
+                    <button onclick="logoutFirebase()" class="text-gray-500 hover:text-red-500 text-xs ml-2"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8 flex-grow">
+        <aside class="w-full lg:w-1/4 space-y-6">
+            <div class="bg-gamer-panel p-6 rounded-lg border border-gray-800 sticky top-24">
+                <h3 class="text-2xl font-bold heading-font text-white mb-6 border-b border-gray-700 pb-2">FILTERS</h3>
+                <div class="mb-6">
+                    <div class="flex justify-between text-sm font-bold mb-2">
+                        <span class="text-gray-400">MAX PRICE</span>
+                        <span id="priceValue" class="text-neon-yellow">₹10,000</span>
+                    </div>
+                    <input type="range" id="priceRange" min="500" max="20000" step="500" value="20000" class="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-neon-orange">
+                </div>
+            </div>
+        </aside>
+
+        <main class="w-full lg:w-3/4">
+            
+            <div class="w-full h-32 bg-gradient-to-r from-purple-900 to-blue-900 rounded-lg mb-8 flex items-center justify-between px-8 border border-gray-700 ad-shine cursor-pointer" onclick="alert('This is a simulated Ad space.')">
+                <div>
+                    <span class="bg-yellow-500 text-black text-[10px] font-bold px-2 py-1 rounded">SPONSORED</span>
+                    <h2 class="text-2xl font-bold heading-font text-white mt-1">GET 100% BONUS DIAMONDS</h2>
+                    <p class="text-xs text-gray-300">Top up now via our partner store.</p>
+                </div>
+                <div class="bg-white text-black font-bold py-2 px-4 rounded text-sm hover:scale-105 transition">
+                    CHECK NOW
+                </div>
+            </div>
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-bold heading-font text-white">TRENDING <span class="text-neon-orange">IDs</span></h2>
+                <div class="text-xs text-gray-400" id="resultCount">Loading...</div>
+            </div>
+            <div id="productGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </main>
+    </div>
+
+    <div id="loginModal" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-gamer-panel border border-gray-700 rounded-xl w-full max-w-sm p-8 relative">
+            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+            <h3 class="text-3xl heading-font text-white text-center mb-6">LOGIN</h3>
+            <button onclick="loginWithGoogle()" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-3 rounded flex items-center justify-center gap-3 transition">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" class="w-5 h-5"> Sign in with Google
+            </button>
+        </div>
+    </div>
+
+    <div id="paymentModal" class="fixed inset-0 bg-black/95 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-md">
+        <div class="bg-white text-black rounded-xl w-full max-w-md overflow-hidden relative">
+            <div class="bg-gray-100 p-4 border-b flex justify-between items-center">
+                <h3 class="font-bold text-lg">Secure Payment</h3>
+                <button onclick="closePaymentModal()" class="text-gray-500 hover:text-black"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6">
+                <p class="text-center text-4xl font-bold text-gray-800 mb-6" id="payAmount">₹0</p>
+                <button onclick="processUPI()" class="w-full border border-gray-300 hover:bg-blue-50 p-3 rounded flex items-center justify-between transition group">
+                    <div class="flex items-center gap-3"><i class="fas fa-mobile-alt text-xl text-blue-600"></i><div class="text-left"><p class="font-bold text-sm">PhonePe / GPay</p></div></div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MERCHANT_UPI = "yourupi@okaxis"; 
+        const products = [
+            { id: 1, title: "S1 Sakura + HipHop", level: 78, rank: "Grandmaster", price: 12000, image: "https://via.placeholder.com/400x250/1a1a1a/F4D03F?text=Sakura+Bundle", badges: ["Rare"] },
+            { id: 9, title: "Golden Angelic Pants", level: 68, rank: "Heroic", price: 5000, image: "https://i.ibb.co/Dg9pVRN4/image.png", badges: ["Angelic", "Rare"] },
+            { id: 2, title: "Evo MP40 Max Lvl 7", level: 62, rank: "Heroic", price: 3500, image: "https://via.placeholder.com/400x250/1a1a1a/FF8C00?text=Max+MP40", badges: ["Instant"] }
+        ];
+        
+        // Functions
+        function filterProducts() {
+            const grid = document.getElementById('productGrid');
+            const maxPrice = parseInt(document.getElementById('priceRange').value);
+            document.getElementById('priceValue').innerText = `₹${maxPrice}`;
+            grid.innerHTML = "";
+            products.filter(p => p.price <= maxPrice).forEach(p => {
+                grid.innerHTML += `<div class="bg-gamer-panel rounded-lg overflow-hidden border border-gray-800 hover:border-neon-orange transition" onclick="openPaymentModal(${p.price})"><img src="${p.image}" class="w-full h-48 object-cover"><div class="p-4"><h3 class="font-bold text-white truncate">${p.title}</h3><div class="flex justify-between mt-2"><span class="text-xs bg-gray-700 text-white px-2 py-1 rounded">${p.rank}</span><span class="text-xl font-bold text-neon-orange heading-font">₹${p.price}</span></div></div></div>`;
+            });
+            document.getElementById('resultCount').innerText = `${products.length} Items`;
+        }
+
+        function openLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); }
+        function closeLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
+        function openPaymentModal(price) { 
+            if(document.getElementById('userProfile').classList.contains('hidden')) { alert("Please Login first."); openLoginModal(); return; }
+            document.getElementById('paymentModal').classList.remove('hidden');
+            document.getElementById('payAmount').innerText = `₹${price}`;
+        }
+        function closePaymentModal() { document.getElementById('paymentModal').classList.add('hidden'); }
+        function processUPI() { window.location.href = `upi://pay?pa=${MERCHANT_UPI}&pn=FireMarket&am=${document.getElementById('payAmount').innerText.replace('₹','')}&cu=INR`; }
+
+        window.onload = filterProducts;
+        document.getElementById('priceRange').addEventListener('input', filterProducts);
+    </script>
+</body>
+</html>
