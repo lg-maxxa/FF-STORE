@@ -3,25 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FF STORE - Official Market</title>
+    <title>FF STORE - MAX LEVEL MARKET</title>
+    
+    <script>
+      window.si = window.si || function () { (window.si.q = window.si.q || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
 
-    <meta property="og:title" content="FF STORE - Premium ID Market">
-    <meta property="og:description" content="Buy & Sell Verified Free Fire IDs. Safe deals via Instagram. Check our collection!">
-    <meta property="og:image" content="https://i.ibb.co/qM0BgHTq/image.png">
-    <meta property="og:url" content="https://lg-maxxa.github.io/FF-STORE/">
-    <meta property="og:type" content="website">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'gamer-dark': 'rgba(5, 5, 5, 0.95)',
-                        'gamer-panel': '#121212',
-                        'neon-orange': '#FF8C00',
-                        'neon-blue': '#00f3ff',
-                        'neon-green': '#00ff00',
-                        'insta-pink': '#d62976'
+                        'neon-accent': 'var(--accent-color)',
+                        'neon-secondary': '#00ff88',
+                        'discord': '#5865F2',
+                    },
+                    fontFamily: {
+                        'teko': ['Teko', 'sans-serif'],
+                        'mont': ['Montserrat', 'sans-serif']
+                    },
+                    animation: {
+                        'marquee': 'marquee 20s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(100%)' },
+                            '100%': { transform: 'translateX(-100%)' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' }
+                        }
                     }
                 }
             }
@@ -32,373 +51,343 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        /* THEME VARIABLES */
+        :root {
+            --accent-color: #FF8C00; /* Orange Fire */
+            --bg-image: url('https://wallpapers.com/images/hd/garena-free-fire-4k-sparks-w0d3133j4j05047b.jpg');
+        }
+
+        [data-theme="glacier"] {
+            --accent-color: #00f3ff; /* Ice Blue */
+            --bg-image: url('https://wallpaperaccess.com/full/2222770.jpg');
+        }
+
+        [data-theme="venom"] {
+            --accent-color: #9d00ff; /* Purple Poison */
+            --bg-image: url('https://wallpaperaccess.com/full/2443048.jpg');
+        }
+
         body { 
-            background-image: url('https://wallpapers.com/images/hd/garena-free-fire-4k-sparks-w0d3133j4j05047b.jpg');
+            background-image: var(--bg-image);
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             color: #e5e5e5; 
             font-family: 'Montserrat', sans-serif; 
+            transition: background-image 0.5s ease-in-out;
+            overflow-x: hidden;
         }
         
-        .bg-overlay {
-            background-color: rgba(0, 0, 0, 0.85);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+        /* GLASSMORPHISM */
+        .glass-panel {
+            background: rgba(12, 12, 12, 0.85); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
         }
 
         .heading-font { font-family: 'Teko', sans-serif; text-transform: uppercase; }
         
-        /* Gradient Button for Insta */
-        .btn-insta {
-            background: linear-gradient(45deg, #f09433 0%, #dc2743 50%, #bc1888 100%);
-            color: white;
+        .btn-neon {
+            background: var(--accent-color);
+            color: black;
+            font-weight: bold;
+            box-shadow: 0 0 10px var(--accent-color);
+            transition: all 0.2s;
         }
-        .btn-insta:hover { opacity: 0.9; transform: scale(1.02); }
-        
-        /* Slide Menu Animation */
-        #sideMenu { transition: transform 0.3s ease-in-out; }
-        .menu-open { transform: translateX(0) !important; }
+        .btn-neon:hover { transform: scale(1.02); filter: brightness(1.2); }
+
+        /* Floating Particles */
+        .particle {
+            position: fixed;
+            width: 4px; height: 4px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.5;
+            animation: float 10s infinite;
+        }
+
+        /* Scrollbar hidden */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-        const firebaseConfig = {
-          apiKey: "AIzaSyB2BlGf01KRzTG1xAYgawIQQyDGFu8apIw",
-          authDomain: "ff-store-bdb6b.firebaseapp.com",
-          projectId: "ff-store-bdb6b",
-          storageBucket: "ff-store-bdb6b.firebasestorage.app",
-          messagingSenderId: "39168088328",
-          appId: "1:39168088328:web:df32b847be6b97390ab4bd",
-          measurementId: "G-TFGNRFSQJV"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
-
-        window.loginWithGoogle = function() {
-            signInWithPopup(auth, provider)
-            .then((result) => {
-                closeLoginModal();
-                alert(`Welcome back, ${result.user.displayName}!`);
-            })
-            .catch((error) => console.error(error));
-        }
-
-        window.logoutFirebase = function() {
-            signOut(auth).then(() => alert("Logged out successfully."));
-        }
-
-        onAuthStateChanged(auth, (user) => updateUserUI(user));
-
-        function updateUserUI(user) {
-            const loginBtn = document.getElementById('loginBtnContainer');
-            const profile = document.getElementById('userProfile');
-            if (user) {
-                loginBtn.classList.add('hidden');
-                profile.classList.remove('hidden');
-                profile.classList.add('flex');
-                document.getElementById('userName').innerText = user.displayName.split(" ")[0];
-                document.getElementById('userAvatar').src = user.photoURL;
-            } else {
-                loginBtn.classList.remove('hidden');
-                profile.classList.add('hidden');
-                profile.classList.remove('flex');
-            }
-        }
-    </script>
 </head>
-<body class="antialiased overflow-x-hidden">
-    <div class="bg-overlay"> 
+<body class="antialiased flex flex-col min-h-screen">
 
-    <nav class="bg-black/80 border-b border-gray-800 sticky top-0 z-40 shadow-lg backdrop-blur-md">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            
+    <div class="particle" style="top:20%; left:10%; animation-duration: 8s;"></div>
+    <div class="particle" style="top:70%; left:80%; animation-duration: 12s;"></div>
+    <div class="particle" style="top:40%; left:60%; animation-duration: 6s; width:8px; height:8px;"></div>
+
+    <div class="bg-black/90 text-white text-[10px] py-1 border-b border-gray-800 overflow-hidden sticky top-0 z-50">
+        <div class="whitespace-nowrap animate-[marquee_25s_linear_infinite] flex items-center">
+            <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></span> <span class="font-bold text-green-400 mr-4">LIVE:</span> 12,405 Players Online
+            <span class="mx-6 text-gray-500">|</span> <span class="font-bold text-neon-accent">NEW:</span> Guild Tournament Registration FREE
+            <span class="mx-6 text-gray-500">|</span> <span class="font-bold text-yellow-400">WINNER:</span> @Rocky_FF just won 500 Diamonds
+        </div>
+    </div>
+
+    <nav class="glass-panel sticky top-6 z-40 mx-2 md:mx-4 rounded-xl mt-2 mb-4">
+        <div class="px-4 py-3 flex justify-between items-center">
             <div class="flex items-center gap-4">
-                <button onclick="toggleMenu()" class="text-white text-2xl hover:text-neon-orange transition">
-                    <i class="fas fa-bars"></i>
-                </button>
-
+                <button onclick="toggleMenu()" class="text-white text-2xl hover:text-neon-accent transition"><i class="fas fa-bars"></i></button>
                 <div class="flex items-center gap-2 cursor-pointer" onclick="showPage('market')">
-                    <i class="fas fa-gamepad text-neon-orange text-2xl"></i>
-                    <div class="text-3xl font-bold heading-font text-white tracking-wider">
-                        FF <span class="text-neon-orange">STORE</span>
+                    <div class="relative">
+                        <i class="fas fa-gamepad text-neon-accent text-3xl"></i>
+                        <div class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                    </div>
+                    <div class="leading-none hidden md:block">
+                        <div class="text-2xl font-bold heading-font text-white tracking-widest">FF<span class="text-neon-accent">STORE</span></div>
+                        <div class="text-[9px] text-gray-400 tracking-[0.3em] font-bold">MAX LEVEL</div>
                     </div>
                 </div>
             </div>
             
-            <div class="flex items-center space-x-4 md:space-x-6">
-                <button onclick="showPage('sell')" class="hidden md:block text-neon-green font-bold text-sm hover:underline"><i class="fas fa-plus-circle"></i> SELL ID</button>
-                
-                <div id="loginBtnContainer">
-                    <button onclick="openLoginModal()" class="bg-neon-orange hover:bg-orange-600 text-black font-bold py-1 px-5 rounded heading-font text-xl transition shadow-[0_0_10px_#FF8C00]">LOGIN</button>
+            <div class="flex items-center gap-3">
+                <button onclick="cycleTheme()" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition"><i class="fas fa-palette text-xs text-gray-300"></i></button>
+                <div class="hidden md:flex gap-2">
+                    <button onclick="showPage('topup')" class="bg-blue-600/20 text-blue-400 border border-blue-500/30 px-3 py-1 rounded text-xs font-bold hover:bg-blue-600/40">💎 TOP UP</button>
+                    <button onclick="showPage('tournament')" class="bg-yellow-600/20 text-yellow-400 border border-yellow-500/30 px-3 py-1 rounded text-xs font-bold hover:bg-yellow-600/40 animate-pulse-fast">🏆 FREE ENTRY</button>
                 </div>
-
-                <div id="userProfile" class="hidden flex items-center gap-3">
-                    <div class="text-right hidden md:block">
-                        <div id="userName" class="text-white font-bold text-sm">Player</div>
-                        <div class="text-[10px] text-green-500">Online</div>
-                    </div>
-                    <img id="userAvatar" src="" class="w-9 h-9 rounded-full border-2 border-neon-orange shadow-lg">
-                    <button onclick="logoutFirebase()" class="text-gray-400 hover:text-red-500 ml-1" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
-                </div>
+                <button onclick="contactOwner()" class="btn-neon py-1 px-4 rounded text-sm heading-font font-bold">LOGIN</button>
             </div>
         </div>
     </nav>
 
-    <div id="sideMenu" class="fixed inset-y-0 left-0 w-72 bg-gamer-panel border-r border-gray-800 z-50 transform -translate-x-full shadow-2xl flex flex-col p-6">
-        <div class="flex justify-between items-center mb-8">
-            <h2 class="text-2xl font-bold heading-font text-white">MENU</h2>
-            <button onclick="toggleMenu()" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+    <div id="sideMenu" class="fixed inset-y-0 left-0 w-72 bg-[#0a0a0a] border-r border-gray-800 z-50 transform -translate-x-full transition-transform duration-300 shadow-2xl flex flex-col">
+        <div class="p-5 border-b border-gray-800 bg-gradient-to-r from-gray-900 to-black flex justify-between items-center">
+            <div class="heading-font text-2xl text-white">MENU</div>
+            <button onclick="toggleMenu()" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
         </div>
-        
-        <nav class="space-y-4 flex-grow">
-            <button onclick="showPage('market'); toggleMenu()" class="w-full text-left bg-gray-800 hover:bg-gray-700 text-white p-4 rounded flex items-center gap-3 transition">
-                <i class="fas fa-store text-neon-orange"></i>
-                <span class="font-bold">BUY & SELL</span>
-            </button>
-
-            <button onclick="openSupportModal(); toggleMenu()" class="w-full text-left bg-gray-800 hover:bg-gray-700 text-white p-4 rounded flex items-center gap-3 transition">
-                <i class="fas fa-headset text-blue-400"></i>
-                <span class="font-bold">SUPPORT</span>
-            </button>
-
-            <button onclick="showPage('sell'); toggleMenu()" class="w-full text-left bg-gray-800 hover:bg-gray-700 text-white p-4 rounded flex items-center gap-3 transition">
-                <i class="fas fa-plus-circle text-neon-green"></i>
-                <span class="font-bold">SELL ID</span>
-            </button>
-        </nav>
-
-        <div class="mt-auto border-t border-gray-700 pt-4">
-            <p class="text-xs text-gray-500 text-center">FF STORE APP v2.0</p>
+        <div class="p-2 space-y-1 overflow-y-auto">
+            <button onclick="showPage('market'); toggleMenu()" class="w-full text-left p-3 rounded hover:bg-white/10 text-gray-300 flex items-center gap-3"><i class="fas fa-store text-neon-accent w-6"></i> Market</button>
+            <button onclick="showPage('topup'); toggleMenu()" class="w-full text-left p-3 rounded hover:bg-white/10 text-gray-300 flex items-center gap-3"><i class="fas fa-gem text-blue-400 w-6"></i> Diamonds</button>
+            <button onclick="showPage('tournament'); toggleMenu()" class="w-full text-left p-3 rounded hover:bg-white/10 text-gray-300 flex items-center gap-3"><i class="fas fa-trophy text-yellow-400 w-6"></i> Tournaments <span class="ml-auto text-[9px] bg-red-600 text-white px-1 rounded">FREE</span></button>
+            <button onclick="showPage('sell'); toggleMenu()" class="w-full text-left p-3 rounded hover:bg-white/10 text-gray-300 flex items-center gap-3"><i class="fas fa-camera text-pink-500 w-6"></i> Sell Account</button>
+        </div>
+        <div class="mt-auto p-4 border-t border-gray-800">
+            <button onclick="contactOwner()" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 rounded font-bold text-sm"><i class="fab fa-instagram"></i> Contact Owner</button>
         </div>
     </div>
 
-    <div class="container mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8 flex-grow">
-        
-        <aside class="w-full lg:w-1/4 space-y-6">
-            <div class="bg-gamer-panel p-6 rounded-lg border border-gray-700 shadow-xl text-center relative overflow-hidden group">
-                <div class="absolute inset-0 bg-gradient-to-r from-purple-900 to-pink-900 opacity-20 group-hover:opacity-30 transition"></div>
-                <h3 class="text-2xl font-bold heading-font text-white mb-2 relative z-10">CONTACT OWNER</h3>
-                <p class="text-xs text-gray-400 mb-4 relative z-10">For direct ID purchase or support</p>
-                <div class="flex justify-center items-center gap-2 mb-4 relative z-10">
-                    <i class="fab fa-instagram text-3xl text-insta"></i>
-                    <span class="text-xl font-bold text-white">@maxxa_fits</span>
+    <div class="container mx-auto px-2 flex-grow flex flex-col lg:flex-row gap-4 relative z-10">
+        <div class="w-full lg:w-3/4 space-y-4">
+            
+            <div id="marketPage" class="space-y-4">
+                <div class="flex gap-2 overflow-x-auto no-scrollbar">
+                    <button class="bg-white text-black font-bold px-4 py-1 rounded text-xs whitespace-nowrap">ALL</button>
+                    <button class="glass-panel text-gray-300 px-4 py-1 rounded text-xs whitespace-nowrap border-none hover:text-white">Rare Bundles</button>
+                    <button class="glass-panel text-gray-300 px-4 py-1 rounded text-xs whitespace-nowrap border-none hover:text-white">Evo Max</button>
                 </div>
-                <button onclick="openInstaProfile()" class="block w-full bg-gradient-to-r from-orange-500 to-pink-600 hover:from-orange-600 hover:to-pink-700 text-white font-bold py-2 rounded relative z-10 transition transform hover:scale-105">
-                    VISIT PROFILE
-                </button>
+                <div id="productGrid" class="grid grid-cols-2 md:grid-cols-3 gap-3"></div>
             </div>
 
-            <div class="bg-gamer-panel p-6 rounded-lg border border-gray-800 sticky top-24">
-                <h3 class="text-2xl font-bold heading-font text-white mb-6 border-b border-gray-700 pb-2">FILTERS</h3>
-                <div class="mb-6">
-                    <div class="flex justify-between text-sm font-bold mb-2">
-                        <span class="text-gray-400">MAX PRICE</span>
-                        <span id="priceValue" class="text-neon-orange">₹7000</span>
+            <div id="topupPage" class="hidden">
+                <div class="glass-panel p-6 rounded-2xl text-center mb-4">
+                    <h2 class="text-4xl heading-font text-white mb-2">INSTANT <span class="text-blue-400">TOPUP</span></h2>
+                    <input type="number" id="topupUid" placeholder="Enter Player ID (UID)" class="bg-black/50 border border-white/20 rounded p-3 w-full max-w-sm text-center text-white outline-none focus:border-blue-500 mb-4">
+                    <div class="grid grid-cols-3 gap-3">
+                        <button onclick="selectTopup(80)" class="bg-black/40 border border-white/10 hover:border-blue-400 p-4 rounded-xl text-white font-bold transition"><img src="https://img.icons8.com/color/48/diamond.png" class="w-6 mx-auto mb-1"> 100 💎 <br><span class="text-blue-400 text-sm">₹80</span></button>
+                        <button onclick="selectTopup(240)" class="bg-black/40 border border-white/10 hover:border-blue-400 p-4 rounded-xl text-white font-bold transition relative"><div class="absolute top-0 right-0 bg-red-600 text-[8px] px-1">HOT</div><img src="https://img.icons8.com/color/48/diamond.png" class="w-6 mx-auto mb-1"> 310 💎 <br><span class="text-blue-400 text-sm">₹240</span></button>
+                        <button onclick="selectTopup(400)" class="bg-black/40 border border-white/10 hover:border-blue-400 p-4 rounded-xl text-white font-bold transition"><img src="https://img.icons8.com/color/48/diamond.png" class="w-6 mx-auto mb-1"> 520 💎 <br><span class="text-blue-400 text-sm">₹400</span></button>
                     </div>
-                    <input type="range" id="priceRange" min="0" max="7000" step="100" value="7000" class="w-full h-1 bg-gray-700 rounded-lg cursor-pointer accent-neon-orange">
                 </div>
             </div>
-        </aside>
 
-        <div id="marketPage" class="w-full lg:w-3/4">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-3xl font-bold heading-font text-white">TRENDING <span class="text-neon-orange">IDs</span></h2>
-                <div class="text-xs text-gray-400" id="resultCount">Loading...</div>
+            <div id="tournamentPage" class="hidden">
+                <div class="glass-panel p-6 rounded-2xl border border-neon-accent/30 relative">
+                    <div class="absolute -top-3 left-6 bg-black px-2 text-neon-accent font-bold text-xs border border-neon-accent">REGISTRATION OPEN</div>
+                    <form onsubmit="submitTournament(event)" class="space-y-4 mt-2">
+                        <div>
+                            <label class="text-gray-500 text-[10px] font-bold">SELECT TOURNAMENT TYPE</label>
+                            <select id="tourneyType" class="w-full bg-black/50 border border-white/10 rounded p-3 text-white text-sm outline-none focus:border-neon-accent mt-1">
+                                <option>🏆 Guild War (12v12) - FREE</option>
+                                <option>⚔️ CS Ranked (4v4) - FREE</option>
+                                <option>🔫 Casual BR (Solo) - FREE</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <input type="text" id="t_name" placeholder="Team / Player Name" required class="w-full bg-black/50 border border-white/10 rounded p-3 text-white text-sm outline-none mt-1">
+                            <input type="number" placeholder="WhatsApp No." required class="w-full bg-black/50 border border-white/10 rounded p-3 text-white text-sm outline-none mt-1">
+                        </div>
+                        <div class="bg-green-900/20 border border-green-500/30 p-3 rounded text-center"><p class="text-green-400 text-xs font-bold"><i class="fas fa-check-circle"></i> NO PAYMENT REQUIRED</p></div>
+                        <button type="submit" class="w-full btn-neon py-4 rounded font-bold heading-font text-xl">SEND DM TO REGISTER <i class="fab fa-instagram"></i></button>
+                    </form>
+                </div>
             </div>
-            <div id="productGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+            <div id="sellPage" class="hidden">
+                <div class="glass-panel p-8 rounded-2xl text-center">
+                    <h2 class="text-3xl heading-font text-white">SELL <span class="text-neon-accent">ACCOUNT</span></h2>
+                    <p class="text-gray-400 text-xs mb-6">We buy IDs instantly.</p>
+                    <button onclick="contactOwner()" class="btn-neon px-8 py-3 rounded font-bold">DM ON INSTAGRAM</button>
+                </div>
+            </div>
         </div>
 
-        <div id="sellPage" class="hidden w-full lg:w-3/4 max-w-2xl mx-auto">
-            <div class="bg-gamer-panel border border-gray-800 p-8 rounded-xl shadow-2xl relative">
-                <button onclick="showPage('market')" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
-                <h2 class="text-4xl heading-font text-white text-center mb-2">SELL YOUR <span class="text-neon-green">ID</span></h2>
-                <p class="text-gray-400 text-center text-sm mb-6">Fill the details and contact us on Instagram.</p>
+        <div class="w-full lg:w-1/4 space-y-4 hidden lg:block">
+            <div class="glass-panel rounded-xl h-64 flex flex-col overflow-hidden">
+                <div class="bg-black/50 p-2 text-[10px] font-bold text-gray-400 border-b border-white/10 flex justify-between">
+                    <span>LIVE GLOBAL CHAT</span><span class="text-green-500">● 4.2k Online</span>
+                </div>
+                <div id="chatFeed" class="flex-grow p-2 space-y-2 overflow-y-hidden relative">
+                    <div class="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black to-transparent pointer-events-none"></div>
+                </div>
+            </div>
+            <div class="glass-panel p-4 rounded-xl text-center border border-green-500/30">
+                <i class="fas fa-shield-check text-3xl text-green-500 mb-2"></i>
+                <div class="text-white font-bold text-sm">100% TRUSTED</div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-16 bg-black/95 border-t border-white/10 relative z-20">
+        <div class="container mx-auto px-4 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 
-                <form onsubmit="redirectToInsta(event)" class="space-y-4">
-                    <div class="grid grid-cols-2 gap-4">
-                        <input type="number" required class="w-full bg-black border border-gray-700 rounded p-3 text-white" placeholder="Level">
-                        <select class="w-full bg-black border border-gray-700 rounded p-3 text-white">
-                            <option>Platinum</option><option>Diamond</option><option>Heroic</option><option>Grandmaster</option>
-                        </select>
-                    </div>
-                    <input type="number" required class="w-full bg-black border border-gray-700 rounded p-3 text-white" placeholder="Price (₹)">
-                    <textarea class="w-full bg-black border border-gray-700 rounded p-3 text-white" rows="2" placeholder="Description..."></textarea>
-                    
-                    <button type="submit" class="w-full btn-insta font-bold py-4 rounded heading-font text-xl transition flex items-center justify-center gap-3">
-                        <i class="fab fa-instagram text-2xl"></i> SUBMIT ON INSTAGRAM
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div> 
-
-    <div class="container mx-auto px-4 mt-8 pb-8">
-        <div class="bg-gamer-panel border border-gray-800 rounded-lg p-8">
-            <h2 class="text-2xl font-bold heading-font text-white mb-6 border-b border-gray-700 pb-4">FREQUENTLY ASKED QUESTIONS</h2>
-            
-            <div class="space-y-4">
-                <details class="bg-black/30 p-4 rounded cursor-pointer">
-                    <summary class="font-bold text-white hover:text-neon-orange">Is it safe to buy IDs here?</summary>
-                    <p class="text-gray-400 text-sm mt-2">Yes. We verify IDs before listing them. However, all transactions are finalized via Instagram for added security.</p>
-                </details>
-                <details class="bg-black/30 p-4 rounded cursor-pointer">
-                    <summary class="font-bold text-white hover:text-neon-orange">How do I get my ID after payment?</summary>
-                    <p class="text-gray-400 text-sm mt-2">Once payment is confirmed on Instagram, the ID credentials will be sent to you instantly.</p>
-                </details>
-                <details class="bg-black/30 p-4 rounded cursor-pointer">
-                    <summary class="font-bold text-white hover:text-neon-orange">Can I sell my own ID?</summary>
-                    <p class="text-gray-400 text-sm mt-2">Yes! Go to the 'Sell ID' menu, fill out the form, and submit it to our Instagram for review.</p>
-                </details>
-            </div>
-
-            <div class="mt-8 border-t border-gray-700 pt-6 text-xs text-gray-500 text-center leading-relaxed">
-                <p class="uppercase font-bold text-red-500 mb-2">TERMS & CONDITIONS</p>
-                <p>The user itself will be responsible for any misleadings and the website shall not be responsible for any of the customer in case of any authoritative links or third-party transactions.</p>
-                <p class="mt-4 text-white font-bold text-sm">FF STORE, All rights reserved 2025.</p>
-            </div>
-        </div>
-    </div>
-
-    </div> 
-
-    <div id="loginModal" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-gamer-panel border border-gray-700 rounded-xl w-full max-w-sm p-8 relative shadow-[0_0_20px_rgba(255,140,0,0.2)]">
-            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
-            <h3 class="text-3xl heading-font text-white text-center mb-8">LOGIN REQUIRED</h3>
-            <button onclick="loginWithGoogle()" class="w-full bg-white hover:bg-gray-100 text-gray-800 font-bold py-3 px-4 rounded shadow-lg flex items-center justify-center gap-4 transition transform hover:scale-105">
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-6 h-6" alt="Google Logo">
-                <span class="text-lg">Sign in with Google</span>
-            </button>
-        </div>
-    </div>
-
-    <div id="supportModal" class="fixed inset-0 bg-black/90 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-gamer-panel border border-neon-blue rounded-xl w-full max-w-md p-8 relative shadow-2xl text-center">
-            <button onclick="closeSupportModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
-            <div class="text-neon-blue text-5xl mb-4"><i class="fas fa-shield-alt"></i></div>
-            <h3 class="text-3xl heading-font text-white mb-4">OUR PROMISE</h3>
-            <p class="text-gray-300 text-sm mb-6">
-                We provide a <span class="text-white font-bold">Safe & Reliable</span> environment for gamers. 
-                Every ID is manually verified by our team. We offer 24/7 support to ensure your money and account are secure.
-            </p>
-            <button onclick="contactInsta()" class="w-full btn-insta font-bold py-3 rounded heading-font text-xl shadow-lg flex items-center justify-center gap-2">
-                <i class="fab fa-instagram"></i> CONTACT SUPPORT
-            </button>
-        </div>
-    </div>
-
-    <div id="detailsModal" class="fixed inset-0 bg-black/95 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-md">
-        <div class="bg-gamer-panel border border-gray-700 rounded-lg w-full max-w-3xl flex flex-col md:flex-row overflow-hidden relative shadow-2xl">
-            <button onclick="closeDetails()" class="absolute top-4 right-4 z-10 bg-black/50 w-8 h-8 rounded-full text-white flex items-center justify-center hover:bg-red-500 transition"><i class="fas fa-times"></i></button>
-            <div class="w-full md:w-1/2 bg-black"><img id="detailImg" src="" class="w-full h-full object-cover opacity-80"></div>
-            <div class="w-full md:w-1/2 p-6 flex flex-col justify-between">
-                <div>
-                    <h2 id="detailTitle" class="text-2xl font-bold text-white heading-font">Title</h2>
-                    <p id="detailPrice" class="text-4xl text-neon-orange font-bold heading-font mt-2">₹0</p>
-                    <div class="grid grid-cols-2 gap-3 mt-6 text-sm">
-                        <div class="bg-black/40 p-3 rounded border border-gray-700 text-center"><span class="text-gray-500 text-[10px]">RANK</span><br><span id="detailRank" class="text-white font-bold">Unknown</span></div>
-                        <div class="bg-black/40 p-3 rounded border border-gray-700 text-center"><span class="text-gray-500 text-[10px]">LEVEL</span><br><span id="detailLevel" class="text-white font-bold">0</span></div>
+                <div class="space-y-4">
+                    <div class="text-4xl heading-font text-white">FF <span class="text-neon-accent">STORE</span></div>
+                    <p class="text-gray-400 text-xs leading-relaxed">The #1 reliable marketplace for gamers. Buy & sell IDs, top-up diamonds, and join tournaments safely. Verified by Maxxa Fits.</p>
+                    <div class="flex gap-2">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" class="h-6 bg-white rounded px-1">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" class="h-6 bg-white rounded px-1">
+                        <div class="h-6 bg-white rounded px-2 flex items-center text-xs font-bold text-black">UPI</div>
                     </div>
                 </div>
-                <div class="mt-8 space-y-3">
-                    <button onclick="contactInsta()" class="w-full btn-insta font-bold py-3 rounded heading-font text-xl shadow-lg flex items-center justify-center gap-2">
-                        <i class="fab fa-instagram"></i> BUY ON INSTAGRAM
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <script>
-        const INSTA_PROFILE_URL = "https://www.instagram.com/maxxa_fits/";
-
-        // --- PRODUCTS ---
-        const products = [
-            { id: 1, title: "S1 Rare Bundle", level: 60, rank: "Diamond", price: 2500, image: "https://i.ibb.co/BVXm63cT/image.png", verified: false },
-            { id: 2, title: "Platinum Account", level: 55, rank: "Platinum", price: 1500, image: "https://i.ibb.co/N21KhbfN/image.png", verified: false },
-            { id: 3, title: "Special Bundle A", level: 65, rank: "Heroic", price: 4500, image: "https://i.ibb.co/QRRxmxx/image.png", verified: true },
-            { id: 4, title: "Special Bundle B", level: 70, rank: "Diamond", price: 3000, image: "https://i.ibb.co/jZj5Nsb8/image.png", verified: false },
-            { id: 5, title: "Rare Gun Skins", level: 72, rank: "Master", price: 6000, image: "https://i.ibb.co/v690xhHm/image.png", verified: true },
-            { id: 6, title: "Budget Account", level: 45, rank: "Gold", price: 900, image: "https://i.ibb.co/5gJmQtYX/image.png", verified: false }
-        ];
-
-        let currentProduct = null;
-
-        // --- MENU TOGGLE LOGIC ---
-        function toggleMenu() {
-            const menu = document.getElementById('sideMenu');
-            if (menu.classList.contains('menu-open')) {
-                menu.classList.remove('menu-open');
-            } else {
-                menu.classList.add('menu-open');
-            }
-        }
-
-        function showPage(pageId) {
-            document.getElementById('marketPage').classList.add('hidden');
-            document.getElementById('sellPage').classList.add('hidden');
-            if(pageId === 'market') document.getElementById('marketPage').classList.remove('hidden');
-            if(pageId === 'sell') document.getElementById('sellPage').classList.remove('hidden');
-        }
-
-        // --- FILTER LOGIC ---
-        function filterProducts() {
-            const grid = document.getElementById('productGrid');
-            const maxPrice = parseInt(document.getElementById('priceRange').value);
-            document.getElementById('priceValue').innerText = `₹${maxPrice}`;
-            grid.innerHTML = "";
-            
-            products.filter(p => p.price <= maxPrice).forEach(p => {
-                const badgeHTML = p.verified ? `<div class="absolute top-2 right-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 border border-blue-400 shadow-lg"><i class="fas fa-check-circle"></i> VERIFIED</div>` : '';
-                grid.innerHTML += `
-                <div class="bg-gamer-panel rounded-lg overflow-hidden border border-gray-800 hover:border-neon-orange transition relative group cursor-pointer" onclick="openDetails(${p.id})">
-                    ${badgeHTML}
-                    <div class="overflow-hidden h-48">
-                        <img src="${p.image}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
-                    </div>
-                    <div class="p-4 relative">
-                        <div class="absolute -top-8 right-4 bg-black border border-neon-orange text-neon-orange font-bold px-3 py-1 rounded shadow-lg heading-font text-xl">₹${p.price}</div>
-                        <h3 class="font-bold text-white truncate pr-2">${p.title}</h3>
-                        <div class="flex gap-2 mt-2 text-xs text-gray-400">
-                            <span class="bg-gray-800 px-2 py-1 rounded">${p.rank}</span>
-                            <span class="bg-gray-800 px-2 py-1 rounded">Lvl ${p.level}</span>
+                <div class="glass-panel p-4 rounded-xl border border-[#5865F2]/50 bg-[#5865F2]/10 relative group cursor-pointer hover:bg-[#5865F2]/20 transition" onclick="window.open('https://discord.com', '_blank')">
+                    <div class="absolute -top-3 right-4 bg-[#5865F2] text-white text-[9px] font-bold px-2 py-0.5 rounded">OFFICIAL</div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="fab fa-discord text-4xl text-[#5865F2]"></i>
+                        <div>
+                            <div class="font-bold text-white text-lg">DISCORD</div>
+                            <div class="text-[10px] text-gray-400">Join 5,000+ Members</div>
                         </div>
                     </div>
-                </div>`;
-            });
-            document.getElementById('resultCount').innerText = `${products.filter(p => p.price <= maxPrice).length} Items`;
+                    <p class="text-[10px] text-gray-300 mb-3">Get daily giveaways, scrims alerts, and support.</p>
+                    <button class="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold py-2 rounded text-xs flex items-center justify-center gap-2">
+                        <i class="fas fa-sign-in-alt"></i> LOGIN WITH DISCORD
+                    </button>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-white font-bold text-sm border-l-4 border-neon-accent pl-2">FOLLOW US</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="contactOwner()" class="bg-[#E1306C]/20 hover:bg-[#E1306C] border border-[#E1306C]/50 text-white py-2 rounded flex items-center justify-center gap-2 transition group">
+                            <i class="fab fa-instagram text-xl group-hover:scale-110"></i> <span class="text-xs font-bold">Instagram</span>
+                        </button>
+                        <button class="bg-[#1877F2]/20 hover:bg-[#1877F2] border border-[#1877F2]/50 text-white py-2 rounded flex items-center justify-center gap-2 transition group">
+                            <i class="fab fa-facebook text-xl group-hover:scale-110"></i> <span class="text-xs font-bold">Facebook</span>
+                        </button>
+                        <button class="bg-black/40 hover:bg-black border border-white/20 text-white py-2 rounded flex items-center justify-center gap-2 transition group">
+                            <i class="fab fa-x-twitter text-xl group-hover:scale-110"></i> <span class="text-xs font-bold">Twitter</span>
+                        </button>
+                        <button class="bg-[#25D366]/20 hover:bg-[#25D366] border border-[#25D366]/50 text-white py-2 rounded flex items-center justify-center gap-2 transition group">
+                            <i class="fab fa-whatsapp text-xl group-hover:scale-110"></i> <span class="text-xs font-bold">WhatsApp</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h3 class="text-white font-bold text-sm border-l-4 border-neon-secondary pl-2">STAY UPDATED</h3>
+                    <p class="text-xs text-gray-400">Don't miss the next Free Fire Tournament or Evo Gun giveaway.</p>
+                    <div class="flex gap-2">
+                        <input type="email" placeholder="Your Email..." class="w-full bg-black border border-white/20 rounded px-3 py-2 text-xs text-white outline-none focus:border-neon-accent">
+                        <button class="bg-white text-black font-bold px-4 rounded text-xs hover:bg-gray-200">JOIN</button>
+                    </div>
+                    <div class="flex gap-4 text-[10px] text-gray-500 mt-4">
+                        <a href="#" class="hover:text-white">Privacy Policy</a>
+                        <a href="#" class="hover:text-white">Terms of Service</a>
+                        <a href="#" class="hover:text-white">Refunds</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-t border-white/5 bg-black py-4 text-center">
+            <p class="text-[10px] text-gray-600">© 2025 FF STORE by MAXXA FITS. All Rights Reserved.</p>
+            <p class="text-[9px] text-gray-700 mt-1">Not affiliated with Garena International. Free Fire is a registered trademark of Garena.</p>
+        </div>
+    </footer>
+
+    <div id="paymentModal" class="fixed inset-0 bg-black/95 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-md">
+        <div class="glass-panel w-full max-w-sm rounded-2xl p-6 relative text-center">
+            <button onclick="closePayment()" class="absolute top-4 right-4 text-gray-400"><i class="fas fa-times"></i></button>
+            <h3 class="heading-font text-2xl text-white mb-4">SELECT PAYMENT</h3>
+            <div class="space-y-3">
+                <button onclick="finalPay('PhonePe')" class="w-full bg-[#5f259f] text-white py-3 rounded font-bold">PhonePe</button>
+                <button onclick="finalPay('GPay')" class="w-full bg-white text-black py-3 rounded font-bold">Google Pay</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 600, once: true });
+
+        // NAVIGATION & THEME
+        function toggleMenu() { document.getElementById('sideMenu').classList.toggle('-translate-x-full'); }
+        function showPage(pageId) {
+            ['marketPage', 'topupPage', 'tournamentPage', 'sellPage'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            document.getElementById(pageId + 'Page').classList.remove('hidden');
+        }
+        const themes = [null, 'glacier', 'venom'];
+        let currentTheme = 0;
+        function cycleTheme() {
+            currentTheme = (currentTheme + 1) % themes.length;
+            const t = themes[currentTheme];
+            t ? document.documentElement.setAttribute('data-theme', t) : document.documentElement.removeAttribute('data-theme');
         }
 
-        // --- MODAL FUNCTIONS ---
-        function openLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); }
-        function closeLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
-        
-        function openSupportModal() { document.getElementById('supportModal').classList.remove('hidden'); }
-        function closeSupportModal() { document.getElementById('supportModal').classList.add('hidden'); }
-
-        function openDetails(id) {
-            currentProduct = products.find(p => p.id === id);
-            document.getElementById('detailTitle').innerText = currentProduct.title;
-            document.getElementById('detailPrice').innerText = `₹${currentProduct.price}`;
-            document.getElementById('detailImg').src = currentProduct.image;
-            document.getElementById('detailRank').innerText = currentProduct.rank;
-            document.getElementById('detailLevel').innerText = currentProduct.level;
-            document.getElementById('detailsModal').classList.remove('hidden');
+        // LOGIC FUNCTIONS
+        function submitTournament(e) {
+            e.preventDefault();
+            const type = document.getElementById('tourneyType').value;
+            const name = document.getElementById('t_name').value;
+            window.open(`https://www.instagram.com/maxxa_fits/`, '_blank');
         }
-        function closeDetails() { document.getElementById('detailsModal').classList.add('hidden'); }
+        let topupAmt = 0;
+        function selectTopup(amt) { topupAmt = amt; document.getElementById('paymentModal').classList.remove('hidden'); }
+        function closePayment() { document.getElementById('paymentModal').classList.add('hidden'); }
+        function finalPay(method) { window.open("https://www.instagram.com/maxxa_fits/", "_blank"); closePayment(); }
+        function contactOwner() { window.open("https://www.instagram.com/maxxa_fits/", "_blank"); }
 
-        function contactInsta() { window.open(INSTA_PROFILE_URL, '_blank'); }
-        function openInstaProfile() { window.open(INSTA_PROFILE_URL, '_blank'); }
-        function redirectToInsta(e) { e.preventDefault(); window.open(INSTA_PROFILE_URL, '_blank'); }
+        // CHAT SIMULATION
+        const chatNames = ["RohanFF", "SkyLord_Fan", "DarkSoul", "Viper", "Killer007", "Ninja_X"];
+        const chatMsgs = ["Any tournament today?", "Is the 80rs topup instant?", "Just bought the Evo pack!", "Looking for Guild", "Safe site bro?"];
+        function addChat() {
+            const feed = document.getElementById('chatFeed');
+            const div = document.createElement('div');
+            const name = chatNames[Math.floor(Math.random() * chatNames.length)];
+            const msg = chatMsgs[Math.floor(Math.random() * chatMsgs.length)];
+            div.className = "text-[10px] text-gray-400";
+            div.innerHTML = `<span class="text-neon-secondary font-bold">${name}:</span> ${msg}`;
+            feed.appendChild(div);
+            if(feed.children.length > 8) feed.removeChild(feed.children[0]);
+        }
+        setInterval(addChat, 2500);
 
-        window.onload = filterProducts;
-        document.getElementById('priceRange').addEventListener('input', filterProducts);
+        // MARKET POPULATION
+        const products = [
+            { id: 1, title: "S1 Sakure", price: 2500, image: "https://i.ibb.co/BVXm63cT/image.png", badge: "RARE" },
+            { id: 2, title: "Blue Criminal", price: 1500, image: "https://i.ibb.co/N21KhbfN/image.png", badge: "" },
+            { id: 3, title: "Hip Hop Bundle", price: 9500, image: "https://i.ibb.co/QRRxmxx/image.png", badge: "EPIC" },
+            { id: 4, title: "Evo AK47 Max", price: 3000, image: "https://i.ibb.co/jZj5Nsb8/image.png", badge: "" },
+            { id: 5, title: "Green Dino", price: 800, image: "https://i.ibb.co/v690xhHm/image.png", badge: "" },
+            { id: 6, title: "Titan Scar", price: 4200, image: "https://i.ibb.co/5gJmQtYX/image.png", badge: "LEGEND" }
+        ];
+        const grid = document.getElementById('productGrid');
+        products.forEach(p => {
+            const badgeHTML = p.badge ? `<div class="absolute top-2 left-2 bg-red-600 text-white text-[9px] font-bold px-2 rounded">${p.badge}</div>` : '';
+            grid.innerHTML += `
+            <div class="glass-panel rounded-lg overflow-hidden relative group cursor-pointer hover:border-neon-accent transition" data-aos="fade-up">
+                ${badgeHTML}
+                <div class="h-32 bg-black/50 overflow-hidden"><img src="${p.image}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500"></div>
+                <div class="p-3"><h3 class="font-bold text-white text-xs truncate">${p.title}</h3><div class="flex justify-between items-center mt-1"><span class="text-neon-accent font-bold heading-font text-lg">₹${p.price}</span><button class="bg-white/10 hover:bg-white/20 text-gray-300 text-[10px] px-2 py-0.5 rounded">VIEW</button></div></div>
+            </div>`;
+        });
     </script>
 </body>
 </html>
